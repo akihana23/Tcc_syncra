@@ -1,4 +1,4 @@
-# Syncra - Social Listening para Pequenos Negocios
+﻿# Syncra - Social Listening para Pequenos Negocios
 
 Projeto de TCC com uma API em .NET 8 e um frontend React/Vite para monitorar sinais publicos de marcas em redes sociais.
 

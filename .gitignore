@@ -1,0 +1,20 @@
+﻿# Local secrets
+**/appsettings.Development.json
+**/appsettings.Local.json
+**/.env
+**/.env.*
+
+# .NET
+**/bin/
+**/obj/
+**/.vs/
+*.user
+*.suo
+*.log
+
+# Frontend
+**/node_modules/
+**/dist/
+*.local
+vite.out.log
+vite.err.log
