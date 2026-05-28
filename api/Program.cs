@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using SocialListening.API.Data;
 using SocialListening.API.Services;
@@ -32,6 +33,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     )
 );
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor |
+        ForwardedHeaders.XForwardedProto;
+});
+
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -58,6 +66,16 @@ var allowedOrigins =
         .GetSection("Cors:AllowedOrigins")
         .Get<string[]>();
 
+var allowedOriginsValue =
+    builder.Configuration["Cors:AllowedOriginsCsv"] ??
+    Environment.GetEnvironmentVariable("CORS_ALLOWED_ORIGINS");
+
+if (!string.IsNullOrWhiteSpace(allowedOriginsValue))
+{
+    allowedOrigins = allowedOriginsValue
+        .Split([',', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+}
+
 if (allowedOrigins is null || allowedOrigins.Length == 0)
 {
     allowedOrigins =
@@ -79,6 +97,14 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+app.UseForwardedHeaders();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.Migrate();
+}
 
 // Swagger
 if (app.Environment.IsDevelopment())
