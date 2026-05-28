@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: syncra-api
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    dockerfilePath: ./api/Dockerfile
+    dockerContext: ./api
+    healthCheckPath: /api/test
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__DefaultConnection
+        sync: false
+      - key: Jwt__Key
+        sync: false
+      - key: Jwt__Issuer
+        value: SocialListeningAPI
+      - key: Jwt__Audience
+        value: SocialListeningClient
+      - key: OpenAI__ApiKey
+        sync: false
+      - key: OpenAI__Model
+        value: gpt-5-mini
+      - key: Youtube__ApiKey
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
