@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 using SocialListening.API.Services;
 
@@ -37,6 +37,7 @@ namespace SocialListening.API.Controllers
             catch (Exception ex)
                 when (
                     ex is HttpRequestException ||
+                    ex is InvalidOperationException ||
                     ex is TaskCanceledException ||
                     ex is System.Text.Json.JsonException
                 )
