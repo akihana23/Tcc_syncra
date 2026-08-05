@@ -27,8 +27,13 @@ ConnectionStrings__DefaultConnection=<string do Neon>
 Jwt__Key=<segredo longo para JWT>
 OpenAI__ApiKey=<sua chave da OpenAI>
 Youtube__ApiKey=<sua chave do YouTube>
+Reddit__ClientId=<client id do app Reddit>
+Reddit__ClientSecret=<client secret do app Reddit>
+Reddit__UserAgent=SyncraSocialListening/1.0 by seu_usuario_reddit
 CORS_ALLOWED_ORIGINS=<url do frontend na Vercel>
 ```
+
+A integracao do Reddit usa OAuth. Sem `Reddit__ClientId` e `Reddit__ClientSecret`, o Reddit pode bloquear buscas feitas a partir do Render com erro 403.
 
 Enquanto a URL final da Vercel ainda nao existir, use temporariamente:
 
