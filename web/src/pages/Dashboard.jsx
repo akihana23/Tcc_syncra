@@ -17,6 +17,7 @@ import EngagementSummaryChart from '../components/EngagementSummaryChart'
 import MetricCard from '../components/MetricCard'
 import PlatformSentimentChart from '../components/PlatformSentimentChart'
 import ProjectPlan from '../components/ProjectPlan'
+import ReportButton from '../components/ReportButton'
 import RedditPostCard from '../components/RedditPostCard'
 import SearchBar from '../components/SearchBar'
 import SentimentChart from '../components/SentimentChart'
@@ -394,6 +395,7 @@ function Dashboard({
       sentiment,
       suggestions,
       aiSuggestions,
+      sourceErrors,
     }),
     [
       searchTerm,
@@ -405,6 +407,7 @@ function Dashboard({
       sentiment,
       suggestions,
       aiSuggestions,
+      sourceErrors,
     ]
   )
 
@@ -442,6 +445,12 @@ function Dashboard({
             searchError={searchError}
             sourceErrors={sourceErrors}
           />
+
+          {hasSnapshotData && (
+            <div className="mb-6 flex justify-end">
+              <ReportButton report={snapshotPayload} />
+            </div>
+          )}
         </>
       )}
 
@@ -1168,6 +1177,7 @@ function buildBrandSnapshotPayload({
   sentiment,
   suggestions,
   aiSuggestions,
+  sourceErrors,
 }) {
   const items =
     buildListeningItems(posts, videos, blueskyPosts)
@@ -1197,6 +1207,7 @@ function buildBrandSnapshotPayload({
     items,
     recommendations: suggestions,
     aiInsights: aiSuggestions,
+    sourceErrors,
   }
 }
 
