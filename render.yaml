@@ -24,11 +24,7 @@ services:
         value: gpt-5-mini
       - key: Youtube__ApiKey
         sync: false
-      - key: Reddit__ClientId
+      - key: Mastodon__AccessToken
         sync: false
-      - key: Reddit__ClientSecret
-        sync: false
-      - key: Reddit__UserAgent
-        value: SyncraSocialListening/1.0 by tcc-syncra
       - key: CORS_ALLOWED_ORIGINS
         sync: false
