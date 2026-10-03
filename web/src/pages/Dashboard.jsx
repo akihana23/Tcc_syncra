@@ -18,7 +18,7 @@ import MetricCard from '../components/MetricCard'
 import PlatformSentimentChart from '../components/PlatformSentimentChart'
 import ProjectPlan from '../components/ProjectPlan'
 import ReportButton from '../components/ReportButton'
-import RedditPostCard from '../components/RedditPostCard'
+import MastodonPostCard from '../components/MastodonPostCard'
 import SearchBar from '../components/SearchBar'
 import SentimentChart from '../components/SentimentChart'
 import SourceDistributionChart from '../components/SourceDistributionChart'
@@ -63,7 +63,7 @@ function Dashboard({
     useState(false)
 
   const [activeTab, setActiveTab] =
-    useState('reddit')
+    useState('mastodon')
 
   const [sourceErrors, setSourceErrors] =
     useState([])
@@ -124,11 +124,11 @@ function Dashboard({
 
     try {
       const [
-        redditResult,
+        mastodonResult,
         youtubeResult,
         blueskyResult,
       ] = await Promise.allSettled([
-        api.get('/reddit/search', {
+        api.get('/mastodon/search', {
           params: {
             query: term,
           },
@@ -149,8 +149,8 @@ function Dashboard({
 
       const nextErrors = []
       const nextPosts =
-        redditResult.status === 'fulfilled'
-          ? redditResult.value.data
+        mastodonResult.status === 'fulfilled'
+          ? mastodonResult.value.data
           : []
       const nextVideos =
         youtubeResult.status === 'fulfilled'
@@ -161,8 +161,8 @@ function Dashboard({
           ? blueskyResult.value.data
           : []
 
-      if (redditResult.status === 'rejected') {
-        nextErrors.push('Reddit')
+      if (mastodonResult.status === 'rejected') {
+        nextErrors.push('Mastodon')
       }
 
       if (youtubeResult.status === 'rejected') {
@@ -174,7 +174,7 @@ function Dashboard({
       }
 
       if (
-        redditResult.status === 'rejected' &&
+        mastodonResult.status === 'rejected' &&
         youtubeResult.status === 'rejected' &&
         blueskyResult.status === 'rejected'
       ) {
@@ -277,12 +277,12 @@ function Dashboard({
     allContent.length
 
   const totalScore = posts.reduce(
-    (acc, post) => acc + post.score,
+    (acc, post) => acc + Number(post.favourites ?? 0) + Number(post.boosts ?? 0),
     0
   )
 
   const totalComments = posts.reduce(
-    (acc, post) => acc + post.comments,
+    (acc, post) => acc + Number(post.replies ?? 0),
     0
   )
 
@@ -310,7 +310,7 @@ function Dashboard({
     [allContent]
   )
 
-  const redditNegative =
+  const mastodonNegative =
     posts.filter(
       post =>
         post.sentiment === 'negative'
@@ -330,8 +330,8 @@ function Dashboard({
 
   const negativeByPlatform = [
     {
-      name: 'Reddit',
-      count: redditNegative,
+      name: 'Mastodon',
+      count: mastodonNegative,
     },
     {
       name: 'YouTube',
@@ -416,7 +416,7 @@ function Dashboard({
     snapshotPayload.items.length > 0
 
   const activeItems =
-    activeTab === 'reddit'
+    activeTab === 'mastodon'
       ? posts
       : activeTab === 'youtube'
         ? videos
@@ -652,13 +652,13 @@ function OverviewSection({
         />
 
         <MetricCard
-          title="Upvotes Reddit"
+          title="Interações Mastodon"
           value={totalScore}
           growth="Engajamento"
         />
 
         <MetricCard
-          title="Comentários"
+          title="Respostas Mastodon"
           value={totalComments}
           growth="Discussão"
         />
@@ -872,10 +872,10 @@ function MentionsSection({
             dark:bg-zinc-950
           ">
             <TabButton
-              active={activeTab === 'reddit'}
-              onClick={() => setActiveTab('reddit')}
+              active={activeTab === 'mastodon'}
+              onClick={() => setActiveTab('mastodon')}
             >
-              Reddit ({posts.length})
+              Mastodon ({posts.length})
             </TabButton>
 
             <TabButton
@@ -909,12 +909,12 @@ function MentionsSection({
         )}
 
         {!loading &&
-          activeTab === 'reddit' &&
+          activeTab === 'mastodon' &&
           posts.length > 0 && (
             <div className="grid gap-4">
               {posts.map(
                 (post, index) => (
-                  <RedditPostCard
+                  <MastodonPostCard
                     key={`${post.url}-${index}`}
                     post={post}
                   />
@@ -1214,13 +1214,14 @@ function buildBrandSnapshotPayload({
 function buildListeningItems(posts, videos, blueskyPosts) {
   return [
     ...posts.map(post => ({
-      source: 'Reddit',
+      source: 'Mastodon',
       title: post.title,
       url: post.url,
       sentiment: post.sentiment,
       engagement:
-        Number(post.score ?? 0) +
-        Number(post.comments ?? 0),
+        Number(post.favourites ?? 0) +
+        Number(post.boosts ?? 0) +
+        Number(post.replies ?? 0),
     })),
     ...videos.map(video => ({
       source: 'YouTube',
