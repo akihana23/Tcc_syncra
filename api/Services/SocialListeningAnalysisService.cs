@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using SocialListening.API.DTOs.Analysis;
 using SocialListening.API.DTOs.Bluesky;
-using SocialListening.API.DTOs.Reddit;
+using SocialListening.API.DTOs.Mastodon;
 using SocialListening.API.DTOs.Youtube;
 
 namespace SocialListening.API.Services
@@ -33,17 +33,17 @@ namespace SocialListening.API.Services
             "apple", "samsung", "motorola", "xiaomi"
         ];
 
-        private readonly RedditService _redditService;
+        private readonly MastodonService _mastodonService;
         private readonly YoutubeService _youtubeService;
         private readonly BlueskyService _blueskyService;
 
         public SocialListeningAnalysisService(
-            RedditService redditService,
+            MastodonService mastodonService,
             YoutubeService youtubeService,
             BlueskyService blueskyService
         )
         {
-            _redditService = redditService;
+            _mastodonService = mastodonService;
             _youtubeService = youtubeService;
             _blueskyService = blueskyService;
         }
@@ -135,9 +135,9 @@ namespace SocialListening.API.Services
                 new List<AnalysisSourceStatusDto>();
 
             await FetchSource(
-                "Reddit",
-                async () => (await _redditService.SearchPosts(query))
-                    .Select(MapRedditPost),
+                "Mastodon",
+                async () => (await _mastodonService.SearchPosts(query))
+                    .Select(MapMastodonPost),
                 items,
                 statuses
             );
@@ -201,17 +201,17 @@ namespace SocialListening.API.Services
             }
         }
 
-        private static SocialListeningItemDto MapRedditPost(
-            RedditPostDto post
+        private static SocialListeningItemDto MapMastodonPost(
+            MastodonPostDto post
         )
         {
             return new SocialListeningItemDto
             {
-                Source = "Reddit",
+                Source = "Mastodon",
                 Title = post.Title,
                 Url = post.Url,
                 Sentiment = post.Sentiment,
-                Engagement = post.Score + post.Comments
+                Engagement = post.Favourites + post.Boosts + post.Replies
             };
         }
 
@@ -672,3 +672,4 @@ namespace SocialListening.API.Services
         );
     }
 }
+
