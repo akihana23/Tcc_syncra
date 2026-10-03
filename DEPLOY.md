@@ -27,13 +27,11 @@ ConnectionStrings__DefaultConnection=<string do Neon>
 Jwt__Key=<segredo longo para JWT>
 OpenAI__ApiKey=<sua chave da OpenAI>
 Youtube__ApiKey=<sua chave do YouTube>
-Reddit__ClientId=<client id do app Reddit>
-Reddit__ClientSecret=<client secret do app Reddit>
-Reddit__UserAgent=SyncraSocialListening/1.0 by seu_usuario_reddit
+Mastodon__AccessToken=<opcional; use apenas se uma instancia exigir autenticacao>
 CORS_ALLOWED_ORIGINS=<url do frontend na Vercel>
 ```
 
-A integracao do Reddit usa OAuth. Sem `Reddit__ClientId` e `Reddit__ClientSecret`, o Reddit pode bloquear buscas feitas a partir do Render com erro 403.
+A integracao do Mastodon consulta as timelines publicas de hashtags de `mastodon.social` e `mastodon.world`. A chave `Mastodon__AccessToken` e opcional e so e necessaria se alguma instancia exigir autenticacao para mostrar dados publicos.
 
 Enquanto a URL final da Vercel ainda nao existir, use temporariamente:
 
