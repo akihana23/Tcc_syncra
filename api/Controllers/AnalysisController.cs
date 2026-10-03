@@ -50,7 +50,7 @@ namespace SocialListening.API.Controllers
                         Title = "Fontes sociais principais",
                         Status = "Feito",
                         Priority = "Alta",
-                        Description = "Reddit, YouTube e BlueSky integrados como fontes iniciais de social listening."
+                        Description = "Mastodon, YouTube e BlueSky integrados como fontes iniciais de social listening."
                     },
                     new RoadmapItemDto
                     {
@@ -171,3 +171,4 @@ namespace SocialListening.API.Controllers
         }
     }
 }
+
