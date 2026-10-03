@@ -1,20 +1,20 @@
-﻿using SocialListening.API.DTOs;
+using SocialListening.API.DTOs;
 using System.Text.RegularExpressions;
 
 namespace SocialListening.API.Services
 {
     public class TrendService
     {
-        private readonly RedditService _redditService;
+        private readonly MastodonService _mastodonService;
         private readonly YoutubeService _youtubeService;
         private readonly BlueskyService _blueskyService;
 
         public TrendService(
-            RedditService redditService,
+            MastodonService mastodonService,
             YoutubeService youtubeService,
             BlueskyService blueskyService)
         {
-            _redditService = redditService;
+            _mastodonService = mastodonService;
             _youtubeService = youtubeService;
             _blueskyService = blueskyService;
         }
@@ -25,15 +25,16 @@ namespace SocialListening.API.Services
 
             try
             {
-                var redditPosts = await _redditService.SearchPosts(query);
+                var mastodonPosts = await _mastodonService.SearchPosts(query);
 
                 texts.AddRange(
-                    redditPosts.Select(p => p.Title)
+                    mastodonPosts.Select(p => p.Title)
                 );
             }
             catch (Exception ex)
                 when (
                     ex is HttpRequestException ||
+                    ex is InvalidOperationException ||
                     ex is TaskCanceledException ||
                     ex is System.Text.Json.JsonException
                 )
@@ -112,3 +113,4 @@ namespace SocialListening.API.Services
         }
     }
 }
+
