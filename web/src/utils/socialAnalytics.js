@@ -66,20 +66,24 @@ export function countSentiment(items) {
   }
 }
 
-export function buildPlatformData(posts, videos, blueskyPosts = []) {
-  const redditSentiment = countSentiment(posts)
+export function buildPlatformData(mastodonPosts, videos, blueskyPosts = []) {
+  const mastodonSentiment = countSentiment(mastodonPosts)
   const youtubeSentiment = countSentiment(videos)
   const blueskySentiment = countSentiment(blueskyPosts)
 
   return [
     {
-      name: 'Reddit',
-      mentions: posts.length,
-      engagement: posts.reduce(
-        (acc, post) => acc + post.score + post.comments,
+      name: 'Mastodon',
+      mentions: mastodonPosts.length,
+      engagement: mastodonPosts.reduce(
+        (acc, post) =>
+          acc +
+          Number(post.favourites ?? 0) +
+          Number(post.boosts ?? 0) +
+          Number(post.replies ?? 0),
         0
       ),
-      ...redditSentiment,
+      ...mastodonSentiment,
     },
     {
       name: 'YouTube',
