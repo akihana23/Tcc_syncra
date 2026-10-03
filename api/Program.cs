@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 //Services
-builder.Services.AddHttpClient<RedditService>();
+builder.Services.AddHttpClient<MastodonService>();
 builder.Services.AddHttpClient<YoutubeService>();
 builder.Services.AddHttpClient<BlueskyService>();
 builder.Services.AddHttpClient<AiInsightService>();
@@ -127,3 +127,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
