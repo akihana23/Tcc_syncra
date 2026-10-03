@@ -10,6 +10,7 @@ namespace SocialListening.API.Services
         private static readonly string[] DefaultInstances =
         [
             "https://mastodon.social",
+            "https://fosstodon.org",
             "https://mastodon.world"
         ];
 
@@ -26,7 +27,7 @@ namespace SocialListening.API.Services
             _httpClient = httpClient;
             _sentimentService = sentimentService;
             _configuration = configuration;
-            _httpClient.Timeout = TimeSpan.FromSeconds(20);
+            _httpClient.Timeout = TimeSpan.FromSeconds(30);
 
             if (!_httpClient.DefaultRequestHeaders.UserAgent.Any())
             {
@@ -81,6 +82,8 @@ namespace SocialListening.API.Services
             string hashtag
         )
         {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(25));
+
             try
             {
                 var baseUrl = instance.TrimEnd('/');
@@ -104,10 +107,10 @@ namespace SocialListening.API.Services
                 }
 
                 using var response =
-                    await _httpClient.SendAsync(request);
+                    await _httpClient.SendAsync(request, cts.Token);
 
                 var body =
-                    await response.Content.ReadAsStringAsync();
+                    await response.Content.ReadAsStringAsync(cts.Token);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -136,6 +139,7 @@ namespace SocialListening.API.Services
                 when (
                     ex is HttpRequestException ||
                     ex is TaskCanceledException ||
+                    ex is OperationCanceledException ||
                     ex is JsonException
                 )
             {
@@ -210,14 +214,19 @@ namespace SocialListening.API.Services
 
         private static string NormalizeHashtag(string query)
         {
+            // Remove o '#' inicial se houver e limpa os espaços
+            var trimmed = query.Trim().TrimStart('#');
+
+            // Se o termo tem espaço (ex: "minha marca"), usa apenas a primeira palavra
+            // pois a API do Mastodon /timelines/tag/ aceita somente uma hashtag por vez
+            var firstWord = trimmed.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .FirstOrDefault() ?? string.Empty;
+
             return string.Concat(
-                query
-                    .Trim()
-                    .TrimStart('#')
-                    .Where(character =>
-                        char.IsLetterOrDigit(character) ||
-                        character == '_'
-                    )
+                firstWord.Where(character =>
+                    char.IsLetterOrDigit(character) ||
+                    character == '_'
+                )
             );
         }
 
